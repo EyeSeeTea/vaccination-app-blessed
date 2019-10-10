@@ -9,6 +9,7 @@ const translations = {
     cannot_be_blank: namespace => i18n.t("Field {{field}} cannot be blank", namespace),
     cannot_be_blank_if_other_set: namespace =>
         i18n.t("Field {{field}} cannot be blank if field {{other}} is set", namespace),
+    too_long: namespace => i18n.t("Field {{field}} cannot longer than {{n}} chars", namespace),
 
     no_antigens_selected: () => i18n.t("Select at least one antigen"),
 
@@ -34,6 +35,8 @@ const translations = {
             namespace
         ),
     must_be_bigger_than_zero: () => i18n.t("Number of teams must be positive"),
+    must_be_smaller_than: namespace =>
+        i18n.t("Number of teams must smaller than {{value}}", namespace),
     name_must_be_unique: () => i18n.t("There already exists a campaign with the same name"),
 };
 

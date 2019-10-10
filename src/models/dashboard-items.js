@@ -58,16 +58,33 @@ export const dashboardItemsConfig = {
             legendCode: "RVC_LEGEND_ZERO",
         },
     },
-    tablesByAntigen: {
+    tablesByAntigenAndDose: {
         coverageByAreaTable: {
             elements: ["RVC_DOSES_ADMINISTERED", "RVC_CAMPAIGN_COVERAGE"],
             rows: ["ou"],
             filterDataBy: ["pe"],
-            disaggregatedBy: ["ageGroup", "doses"],
+            disaggregatedBy: ["ageGroup"],
             area: true,
-            title: ns => i18n.t("Campaign Coverage by area (do not edit this table)", ns),
-            appendCode: "coverageByArea",
+            title: ns => i18n.t("Campaign Coverage by area and dose (do not edit this table)", ns),
+            appendCode: "coverageByAreaTable",
+            showColumnTotals: false,
+            showRowSubTotals: true,
+            showColumnSubTotals: false,
+        },
+    },
+    tablesByAntigen: {
+        coverageByAreaTotal: {
+            elements: ["RVC_DOSES_ADMINISTERED", "RVC_CAMPAIGN_COVERAGE"],
+            rows: ["ou"],
+            filterDataBy: ["pe"],
+            disaggregatedBy: ["doses"],
+            area: true,
+            title: ns =>
+                i18n.t("Cumulative Campaign Coverage by area (do not edit this table)", ns),
+            appendCode: "coverageByAreaTotal",
             showRowSubTotals: false,
+            showColumnSubTotals: false,
+            showColumnTotals: false,
         },
         qsPerAntigen: {
             elements: ["RVC_DILUTION_SYRINGES_RATIO", "RVC_CAMPAIGN_NEEDLES_RATIO"],
@@ -96,6 +113,18 @@ export const dashboardItemsConfig = {
             title: ns => i18n.t("Vaccines Per Team", ns),
             appendCode: "vaccinesPerDateTeam",
         },
+        coverageByCampaignAgeRangeAndDose: {
+            elements: ["RVC_DOSES_ADMINISTERED", "RVC_CAMPAIGN_COVERAGE"],
+            rows: [],
+            filterDataBy: ["pe", "ou"],
+            disaggregatedBy: ["ageGroup", "doses"],
+            area: false,
+            title: ns =>
+                i18n.t("Campaign Coverage by age range and dose (do not edit this table)", ns),
+            appendCode: "coverageByCampaignAgeRangeAndDose",
+            showRowSubTotals: false,
+            showColumnTotals: false,
+        },
     },
     tablesByAntigenAndSite: {
         coverageByPeriod: {
@@ -107,12 +136,31 @@ export const dashboardItemsConfig = {
             title: ns => i18n.t("Campaign Coverage by day (do not edit this table)", ns),
             appendCode: "coverageByPeriod",
             showRowSubTotals: false,
+            showColumnTotals: false,
         },
     },
 };
 
-export function buildDashboardItemsCode(datasetName, orgUnitName, antigenName, appendCode) {
-    return [datasetName, orgUnitName, antigenName, appendCode].join(" - ");
+function clipString(s, maxLength, { ellipsis = " ..." } = {}) {
+    return s.length > maxLength ? s.slice(0, maxLength - ellipsis.length) + ellipsis : s;
+}
+
+export function buildDashboardItemsCode(
+    datasetName,
+    orgUnitName,
+    antigenName,
+    appendCode,
+    dose = null
+) {
+    const maxFieldLength = 230;
+    const joiner = " - ";
+    const doseName = dose ? dose.name : null;
+    const suffix = _.compact([antigenName, doseName, appendCode]).join(joiner);
+    // Apply clipping first to org units and finally to the full string
+    const maxOrgUnitName = maxFieldLength - suffix.length - datasetName.length - 2 * joiner.length;
+    const orgUnit = clipString(orgUnitName || "", maxOrgUnitName);
+    const code = _.compact([datasetName, orgUnit, suffix]).join(joiner);
+    return code.slice(0, maxFieldLength);
 }
 
 function getDisaggregations(itemConfigs, disaggregationMetadata, antigen) {
@@ -173,6 +221,7 @@ function getTables({
     itemsMetadata,
     disaggregationMetadata,
     legendsMetadata,
+    doseMetadata,
 }) {
     return _(tables)
         .map((c, key) => {
@@ -197,6 +246,9 @@ function getTables({
                 ...itemsMetadata,
                 disaggregations: getDisaggregations(c, disaggregationMetadata, antigen),
                 showRowSubTotals: c.showRowSubTotals,
+                showColumnSubTotals: !!c.showColumnSubTotals,
+                showColumnTotals: _.isUndefined(c.showColumnTotals) ? true : c.showColumnTotals,
+                dose: doseMetadata,
             });
         })
         .value();
@@ -222,6 +274,7 @@ export function buildDashboardItems(
         globalTables: globalTablesMetadata,
         tablesByAntigen: tablesByAntigenMetadata,
         tablesByAntigenAndSite: tablesByAntigenAndSiteMetadata,
+        tablesByAntigenAndDose: tablesByAntigenAndDoseMetadata,
         chartsByAntigen: chartsByAntigenMetadata,
     } = dashboardItemsConfig;
 
@@ -256,6 +309,40 @@ export function buildDashboardItems(
         .flatten()
         .value();
 
+    const tablesByAntigenAndDose = _(antigensMeta)
+        .flatMap(antigen => {
+            const doses = disaggregationMetadata.doses(antigen);
+            if (!doses)
+                return getTables({
+                    tables: tablesByAntigenAndDoseMetadata,
+                    antigen,
+                    elements,
+                    organisationUnits: organisationUnitsMetadata,
+                    itemsMetadata,
+                    disaggregationMetadata,
+                    legendsMetadata,
+                });
+            const dosesCategoryId = doses.categoryId;
+            const dosesForTables = doses.elements.map(d => ({
+                categoryId: dosesCategoryId,
+                doseId: d.id,
+                name: d.name,
+            }));
+            return _.flatMap(dosesForTables, dft =>
+                getTables({
+                    tables: tablesByAntigenAndDoseMetadata,
+                    antigen,
+                    elements,
+                    organisationUnits: organisationUnitsMetadata,
+                    itemsMetadata,
+                    disaggregationMetadata,
+                    legendsMetadata,
+                    doseMetadata: dosesForTables.length > 1 ? dft : null,
+                })
+            );
+        })
+        .value();
+
     const globalTables = getTables({
         tables: globalTablesMetadata,
         antigen: null,
@@ -266,7 +353,12 @@ export function buildDashboardItems(
         legendsMetadata,
     });
 
-    const reportTables = _.concat(globalTables, tablesByAntigen, tablesByAntigenAndSite);
+    const reportTables = _.concat(
+        globalTables,
+        tablesByAntigenAndDose,
+        tablesByAntigen,
+        tablesByAntigenAndSite
+    );
 
     const chartsByAntigen = _(antigensMeta)
         .flatMap(antigen =>
@@ -304,10 +396,17 @@ export function itemsMetadataConstructor(dashboardItemsMetadata) {
         globalTables,
         tablesByAntigen,
         tablesByAntigenAndSite,
+        tablesByAntigenAndDose,
         chartsByAntigen,
     } = dashboardItemsConfig;
 
-    const allTables = { ...globalTables, ...tablesByAntigen, ...tablesByAntigenAndSite };
+    const allTables = {
+        ...globalTables,
+        ...tablesByAntigen,
+        ...tablesByAntigenAndSite,
+        ...tablesByAntigenAndDose,
+    };
+
     const tableElements = _(allTables)
         .map((item, key) => [key, dataMapper(elementsMetadata, item.elements)])
         .fromPairs()
@@ -547,6 +646,9 @@ const tableConstructor = ({
     legendId,
     teamRowRawDimension = null,
     showRowSubTotals = true,
+    showColumnTotals = true,
+    showColumnSubTotals = false,
+    dose = null,
 }) => {
     const { columns, columnDimensions, categoryDimensions } = getDimensions(
         disaggregations,
@@ -554,7 +656,7 @@ const tableConstructor = ({
         antigenCategory
     );
 
-    const categoryDimensionsWithRows = teamRowRawDimension
+    const categoryDimensionsWithTeams = teamRowRawDimension
         ? [
               ...categoryDimensions,
               {
@@ -563,6 +665,20 @@ const tableConstructor = ({
               },
           ]
         : categoryDimensions;
+
+    const categoryDimensionsComplete = dose
+        ? [
+              ...categoryDimensionsWithTeams,
+              {
+                  category: { id: dose.categoryId },
+                  categoryOptions: [
+                      {
+                          id: dose.doseId,
+                      },
+                  ],
+              },
+          ]
+        : categoryDimensionsWithTeams;
 
     let organisationUnitElements;
     const organisationUnitNames = organisationUnits.map(ou => ou.name).join("-");
@@ -579,21 +695,34 @@ const tableConstructor = ({
 
     const subName = antigen ? antigen.name : "Global";
 
+    const filters = filterDataBy.map(f => ({ id: f }));
+    const allFilters = _.compact([
+        ...filters,
+        dose ? { id: dose.categoryId } : null,
+        antigen ? { id: antigenCategory } : null,
+    ]);
+
     return {
         id,
-        name: buildDashboardItemsCode(datasetName, organisationUnitNames, subName, appendCode),
+        name: buildDashboardItemsCode(
+            datasetName,
+            organisationUnitNames,
+            subName,
+            appendCode,
+            dose
+        ),
         numberType: "VALUE",
         userOrganisationUnitChildren: false,
         legendDisplayStyle: "FILL",
         hideEmptyColumns: false,
         subscribed: false,
-        hideEmptyRows: true,
+        hideEmptyRows: false,
         parentGraphMap: {},
         userOrganisationUnit: false,
         rowSubTotals: showRowSubTotals && !_.isEmpty(disaggregations),
         displayDensity: "NORMAL",
         completedOnly: false,
-        colTotals: true,
+        colTotals: showColumnTotals,
         showDimensionLabels: true,
         sortOrder: 0,
         fontSize: "NORMAL",
@@ -605,13 +734,14 @@ const tableConstructor = ({
             datasetName,
             organisationUnitNames,
             subName,
-            appendCode
+            appendCode,
+            dose
         ),
         hideSubtitle: true,
         ...getTitleWithTranslations(title, {}),
         externalAccess: false,
         legendDisplayStrategy: "FIXED",
-        colSubTotals: false,
+        colSubTotals: showColumnSubTotals,
         legendSet: legendId ? { id: legendId } : null,
         showHierarchy: false,
         rowTotals: false,
@@ -677,7 +807,11 @@ const tableConstructor = ({
         },
         dataElementGroupSetDimensions: [],
         attributeDimensions: [],
-        filterDimensions: _.compact([...filterDataBy, antigen ? antigenCategory : null]),
+        filterDimensions: _.compact([
+            ...filterDataBy,
+            antigen ? antigenCategory : null,
+            dose ? dose.categoryId : null,
+        ]),
         interpretations: [],
         itemOrganisationUnitGroups: [],
         userGroupAccesses: [],
@@ -695,8 +829,8 @@ const tableConstructor = ({
         dataElementDimensions: [],
         periods: periodItems,
         organisationUnits: organisationUnitElements,
-        categoryDimensions: categoryDimensionsWithRows,
-        filters: filterDataBy.map(f => ({ id: f })),
+        categoryDimensions: categoryDimensionsComplete,
+        filters: allFilters,
         rows: rows.map(r => ({ id: r })),
         rowDimensions: rows,
     };
