@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2024-05-17T09:32:19.867Z\n"
+"POT-Creation-Date: 2024-05-17T10:07:12.143Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -145,9 +145,8 @@ msgstr ""
 "Si abandona esta página y vuelve de nuevo, quizá se encuentre con que la "
 "información no se haya actualizado aún. No se preocupe, la información no se "
 "perdió, aparecerá actualizada en unos minutos.\n"
-"La fuente de los datos puede ser https://hmisocba.msf.es/external-static/"
-"Denominators_Tool_OCBA.xlsm o bien usted tenga acceso a estimaciones de "
-"datos locales (e.g. Ministerio de Salud)"
+"La fuente de los datos puede ser {{- hyperlink}} o bien usted tenga acceso a "
+"estimaciones de datos locales (e.g. Ministerio de Salud)"
 
 msgid ""
 "This is the last available population data. Modify it for your campaign and "
@@ -335,16 +334,16 @@ msgid "Back"
 msgstr "Atrás"
 
 msgid "Reactive"
-msgstr ""
+msgstr "Reactiva"
 
 msgid "Preventive"
-msgstr ""
+msgstr "Preventiva"
 
 msgid "Disaggregation"
 msgstr "Desagregación"
 
 msgid "Extra Activities"
-msgstr ""
+msgstr "Actividades Extra"
 
 msgid "Field cannot be blank"
 msgstr "El campo no puede estar vacío"
@@ -370,22 +369,19 @@ msgid "[None]"
 msgstr "[Vacío]"
 
 msgid "[{{total}}] {{names}} and {{othersCount}} other(s)"
-msgstr "[{{total}}] {{names}} y {{othersCount}} otros"
+msgstr "[{{total}}] {{names}} y {{othersCount}} otro(s)"
 
 msgid "doses"
 msgstr "dosis"
 
 msgid "type"
-msgstr ""
+msgstr "tipo"
 
 msgid "age groups"
 msgstr "grupos de edad"
 
 msgid "Period dates"
 msgstr "Periodo"
-
-msgid "Extra activities"
-msgstr ""
 
 msgid "Antigens"
 msgstr "Antígenos"
@@ -564,7 +560,7 @@ msgid ""
 "-> {{ageGroups}}"
 msgstr ""
 "La unidad organizativa {{organisationUnit}} tiene un valor de distribución "
-"de población inválido para los rangos de edad -> {{value}}"
+"de población inválido para los rangos de edad -> {{ageGroups}}"
 
 msgid ""
 "Org unit {{organisationUnit}} has an invalid total value for antigen "

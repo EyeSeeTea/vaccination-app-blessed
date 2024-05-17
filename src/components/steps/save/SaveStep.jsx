@@ -189,7 +189,7 @@ class SaveStep extends React.Component {
                             )}
                         </LiEntry>
 
-                        <LiEntry label={i18n.t("Extra activities")}>
+                        <LiEntry label={i18n.t("Extra Activities")}>
                             [{campaign.extraDataSets.length}]
                             <ul>
                                 {campaign.extraDataSets.map(dataSet => (
