@@ -91,7 +91,7 @@ export class Dashboard {
             .value();
 
         const ageGroupsToId = (ageGroups: CategoryOption[]): string[] =>
-            _.map(ageGroups, ag => categoryOptionsByName[ag.displayName]);
+            _.compact(_.map(ageGroups, ag => categoryOptionsByName[ag.displayName]));
 
         const ageGroupsByAntigen: _.Dictionary<string[]> = _(antigensDisaggregation)
             .map(d => [d.antigen.id, ageGroupsToId(d.ageGroups)])
@@ -121,9 +121,7 @@ export class Dashboard {
             organisationUnitsWithName,
             legendMetadata: {
                 get: (code: string) =>
-                    _(metadataConfig.legendSets)
-                        .keyBy("code")
-                        .getOrFail(code).id,
+                    _(metadataConfig.legendSets).keyBy("code").getOrFail(code).id,
             },
             disaggregationMetadata: {
                 teams: () => ({
@@ -227,13 +225,18 @@ export class Dashboard {
         const antigensMeta = _(dashboardItemsMetadata).getOrFail("antigensMeta");
         const dashboardItemsElements = itemsMetadataConstructor(dashboardItemsMetadata);
 
-        const { metadataToFetch, ...itemsConfig } = dashboardItemsConfig;
+        const { metadataToFetch: _metadataToFetch, ...itemsConfig } = dashboardItemsConfig;
         const expectedCharts = _.flatMap(itemsConfig, _.keys);
 
         const keys = ["antigenCategory", "disaggregationMetadata", ...expectedCharts] as Array<
             keyof typeof dashboardItemsElements
         >;
-        const { antigenCategory, disaggregationMetadata, legendsMetadata, ...elements } = _(keys)
+        const {
+            antigenCategory,
+            disaggregationMetadata,
+            legendsMetadata: _legendsMetadata,
+            ...elements
+        } = _(keys)
             .map(key => [key, _(dashboardItemsElements).get(key, null)])
             .fromPairs()
             .pickBy()

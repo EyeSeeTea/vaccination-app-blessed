@@ -65,7 +65,7 @@ describe("Campaign", () => {
                 ]);
                 const messages = await campaignWithOrgUnit.validate();
 
-                if (level == 6) {
+                if (level === 6) {
                     expect(messages).toEqual(expect.objectContaining({}));
                 } else {
                     expect(messages).toEqual(

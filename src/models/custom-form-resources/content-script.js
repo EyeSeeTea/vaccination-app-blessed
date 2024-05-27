@@ -23,7 +23,7 @@ var getRealDimensions = function($el_, parent) {
 var processWideTables = function() {
     $("#contentDiv").show();
     const contentWidth = $(".ui-tabs-panel").width();
-    console.log("Content box width:", contentWidth);
+    console.debug("Content box width:", contentWidth);
 
     $(".tableGroupWrapper")
         .get()
@@ -45,7 +45,7 @@ var processWideTables = function() {
                 .reverse()
                 .value();
 
-            console.log(
+            console.debug(
                 "Tables width: " +
                     groups.map((group, idx) => "idx=" + idx + " width=" + group.width).join(" - ")
             );
@@ -92,7 +92,7 @@ function getUserSettings() {
     if (dhis2.de.isOffline) return;
 
     return $.getJSON("../api/userSettings.json?key=keyDbLocale", function(data) {
-        console.log("User settings loaded:", data);
+        console.debug("User settings loaded:", data);
         const locale = data.keyDbLocale || "";
         localStorage[storageKey] = locale;
     });
@@ -208,5 +208,7 @@ function init(options) {
 
     getUserSettings();
 }
+
+console.debug("init", init);
 
 export {};

@@ -14,12 +14,13 @@ import AntigenSection from "./AntigenSection";
 // d2-ui Sidebar component has a prop "styles" to customize the leftBar styles, but it
 // raises an error ("object is not extensible") when passed, so use a CSS file instead.
 
-const { Sidebar } = require("@dhis2/d2-ui-core"); // Untyped
 import "./DisaggregationStep.css";
 import i18n from "../../../locales";
 import SimpleCheckbox from "../../forms/SimpleCheckBox";
 import { DataSet } from "../../../models/config";
 import { CampaignType } from "../../../models/AntigensDisaggregation";
+
+const { Sidebar } = require("@dhis2/d2-ui-core"); // Untyped
 
 type Path = (number | string)[];
 
@@ -36,8 +37,12 @@ interface DisaggregationStepState {
 }
 
 class DisaggregationStep extends React.Component<DisaggregationStepProps, DisaggregationStepState> {
+    firstAntigen = this.props.campaign.antigens[0];
+
     state: DisaggregationStepState = {
-        currentTab: { type: "antigen", antigen: this.props.campaign.antigens[0] },
+        currentTab: this.firstAntigen
+            ? { type: "antigen", antigen: this.firstAntigen }
+            : { type: "extra" },
     };
 
     update = memoize((path: Path) => (newValue: any) => {
@@ -51,9 +56,7 @@ class DisaggregationStep extends React.Component<DisaggregationStepProps, Disagg
         if (tabCode === "extra") {
             this.setState({ currentTab: { type: "extra" } });
         } else {
-            const antigen = _(this.props.campaign.antigens)
-                .keyBy("code")
-                .get(tabCode);
+            const antigen = _(this.props.campaign.antigens).keyBy("code").get(tabCode);
 
             this.setState({ currentTab: { type: "antigen", antigen: antigen } });
         }
@@ -106,11 +109,11 @@ class DisaggregationStep extends React.Component<DisaggregationStepProps, Disagg
                     ) : (
                         <div className={classes.page}>
                             {extraActivitiesDataSets.map(dataSet => (
-                                <div className={classes.extra}>
+                                <div key={dataSet.id} className={classes.extra}>
                                     <SimpleCheckbox
                                         key={dataSet.id}
                                         checked={campaign.extraDataSets.some(
-                                            dataSet => dataSet.id === dataSet.id
+                                            dataSet_ => dataSet_.id === dataSet.id
                                         )}
                                         label={dataSet.name}
                                         onChange={isChecked =>

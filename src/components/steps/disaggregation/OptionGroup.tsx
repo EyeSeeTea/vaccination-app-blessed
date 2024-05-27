@@ -23,7 +23,7 @@ const OptionGroup: SFC<OptionGroupProps> = props => {
     return (
         <React.Fragment>
             <div className={classes.checkboxesGroup}>
-                {optionGroup.values[optionGroup.indexSelected].map((option, optionIdx) =>
+                {(optionGroup.values[optionGroup.indexSelected] || []).map((option, optionIdx) =>
                     !isEditing ? (
                         option.selected && (
                             <span key={option.option.id} className={classes.optionValue}>

@@ -14,7 +14,6 @@ import {
     MetadataFields,
     Attribute,
     DataEntryForm,
-    DataValueRequest,
     DataValueResponse,
     Response,
     DataValue,
@@ -352,7 +351,7 @@ export default class DbD2 {
             .value();
     }
 
-    public async postMetadata<Metadata>(
+    public async postMetadata<Metadata extends object>(
         metadata: Metadata,
         options: MetadataOptions = {}
     ): Promise<ApiResponse<MetadataResponse>> {
@@ -482,7 +481,7 @@ export default class DbD2 {
     }
 
     public async getDataValues(params: GetDataValuesParams): Promise<DataValue[]> {
-        const parseDate = (date: Date | undefined, daysOffset: number = 0) =>
+        const parseDate = (date: Date | undefined, daysOffset = 0) =>
             date
                 ? moment(date)
                       .add(daysOffset, "days")

@@ -288,11 +288,12 @@ function getAntigens(
                     _(dataElementGroupsByCode).getOrFail(code).dataElements,
                     dataElements
                 );
+                // formName: Name - INDEX
                 return dataElementsForType.map(de => ({
                     id: de.id,
                     code: de.code,
                     optional: typeString === "OPTIONAL",
-                    order: parseInt(de.formName.split(" - ")[1] || "0"), // formName: Name - INDEX
+                    order: parseInt(de.formName.split(" - ")[1] || "0"),
                 }));
             };
 
@@ -364,17 +365,17 @@ function getPopulationMetadata(
     dataElementGroups: DataElementGroup[],
     categories: Category[]
 ): MetadataConfig["population"] {
-    const codes = [
-        baseConfig.dataElementCodeForTotalPopulation,
-        baseConfig.dataElementCodeForAgeDistribution,
-        baseConfig.dataElementCodeForPopulationByAge,
-    ];
-    const [totalPopulationDataElement, ageDistributionDataElement, populationByAgeDataElement] = _(
-        dataElements
-    )
-        .keyBy(de => de.code)
-        .at(codes)
-        .value();
+    const dataElementsByCode = _(dataElements).keyBy(de => de.code);
+
+    const totalPopulationDataElement = dataElementsByCode.getOrFail(
+        baseConfig.dataElementCodeForTotalPopulation
+    );
+    const ageDistributionDataElement = dataElementsByCode.getOrFail(
+        baseConfig.dataElementCodeForAgeDistribution
+    );
+    const populationByAgeDataElement = dataElementsByCode.getOrFail(
+        baseConfig.dataElementCodeForPopulationByAge
+    );
 
     const ageGroupCategory = _(categories)
         .keyBy("code")
@@ -385,9 +386,9 @@ function getPopulationMetadata(
         .getOrFail(baseConfig.dataElementGroupCodeForPopulation);
 
     return {
-        totalPopulationDataElement,
-        ageDistributionDataElement,
-        populationByAgeDataElement,
+        totalPopulationDataElement: totalPopulationDataElement,
+        ageDistributionDataElement: ageDistributionDataElement,
+        populationByAgeDataElement: populationByAgeDataElement,
         ageGroupCategory,
         dataElementGroup: populationGroup,
     };

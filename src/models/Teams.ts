@@ -101,12 +101,12 @@ export class Teams {
         categoryIdForTeams: string,
         startDate: Moment,
         endDate: Moment,
-        nameOffset: number = 0
+        nameOffset = 0
     ): CategoryOptionTeam[] {
         const teamsData: CategoryOptionTeam[] = _.range(1, teams + 1).map(i => {
             const name = getTeamName(campaignName, nameOffset + i, teams);
             const id = generateUid();
-            const categoryOption = {
+            const categoryOption: CategoryOptionTeam = {
                 id,
                 name,
                 shortName: `Team ${nameOffset + i}_${id}`,
@@ -115,7 +115,7 @@ export class Teams {
                 displayShortName: name,
                 startDate,
                 endDate,
-                dimensionItemType: "CATEGORY_OPTION" as "CATEGORY_OPTION",
+                dimensionItemType: "CATEGORY_OPTION" ,
                 categories: [
                     {
                         id: categoryIdForTeams,
@@ -229,7 +229,7 @@ function leftZeroPad(num: number, size: number): string {
     return "0".repeat(padSize) + numString;
 }
 
-function getTeamName(campaignName: string, teamNumber: number, teamsCount: number): string {
+function getTeamName(campaignName: string, teamNumber: number, _teamsCount: number): string {
     const paddedTeamNumber = leftZeroPad(teamNumber, 3);
     return `Team ${paddedTeamNumber} - ${campaignName}`;
 }

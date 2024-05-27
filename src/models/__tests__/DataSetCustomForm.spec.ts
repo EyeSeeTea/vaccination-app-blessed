@@ -20,6 +20,8 @@ describe("renderHeaderForGroup", () => {
 
         expect(rows.length).toBe(3);
 
+        if (!(row1 && row2 && row3)) return;
+
         const expectedRow1 = `<tr>
             <td class="header-first-column"></td>
             <th colspan="3" scope="col" class="data-header" data-translate><span align="center">1y</span></th>
