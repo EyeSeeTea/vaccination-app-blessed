@@ -312,7 +312,11 @@ export class DataSetCustomForm {
                     "tbody",
                     {},
                     h("tr", { class: `derow de-${dataElement.id} secondary` }, [
-                        h("td", { class: "data-element" }, dataElement.name),
+                        h(
+                            "td",
+                            { class: "data-element", "data-translate": true },
+                            dataElement.name
+                        ),
                         totalTd(
                             dataElement.id,
                             _.flatMap(categoryOptionGroupsArray, categoryOptionGroupsGroups =>
