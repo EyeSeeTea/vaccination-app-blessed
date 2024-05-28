@@ -92,7 +92,8 @@ class DataEntry extends React.Component {
             iframeDocument.querySelector(
                 `#selectedDataSetId [value="${dataSetId}"]`
             ).selected = true;
-            iframe.contentWindow.dataSetSelected();
+
+            if (iframe.contentWindow) iframe.contentWindow.dataSetSelected();
 
             // Remove non-valid periods
             const periodDates = await getPeriodDatesFromDataSetId(dataSetId, d2);
