@@ -7,7 +7,6 @@ import { FormBuilder } from "@dhis2/d2-ui-forms";
 import { TextField } from "@dhis2/d2-ui-core";
 import { Validators } from "@dhis2/d2-ui-forms";
 
-import "./OrganisationUnitsStep.css";
 import { getCurrentUserDataViewOrganisationUnits } from "../../../utils/dhis2";
 
 /*
@@ -112,7 +111,7 @@ class OrganisationUnitsStep extends React.Component {
                     api={this.props.api}
                     onChange={this.setOrgUnits}
                     selected={campaign.organisationUnits.map(ou => ou.path)}
-                    levels={campaign.selectableLevels}
+                    selectableLevels={campaign.selectableLevels}
                     controls={this.controls}
                     rootIds={this.rootIds}
                     listParams={this.listParams}
