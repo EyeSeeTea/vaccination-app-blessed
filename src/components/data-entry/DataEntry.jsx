@@ -102,21 +102,23 @@ class DataEntry extends React.Component {
                 if (selectedDataSetId === dataSetId) {
                     const selectPeriod = iframeDocument.querySelector("#selectedPeriodId");
                     const optionPeriods = Array.from(selectPeriod.childNodes);
-                    optionPeriods.forEach(option => {
-                        const optionFormat = moment(option.value);
-                        if (
-                            optionFormat.isValid() &&
-                            periodDates &&
-                            !optionFormat.isBetween(
-                                periodDates.startDate,
-                                periodDates.endDate,
-                                null,
-                                "[]"
-                            )
-                        ) {
-                            selectPeriod.removeChild(option);
-                        }
-                    });
+                    const formatStr = "YYYYMMDD";
+                    const start = periodDates.startDate
+                        ? moment(periodDates.startDate).format(formatStr)
+                        : null;
+                    const end = periodDates.endDate
+                        ? moment(periodDates.endDate).format(formatStr)
+                        : null;
+
+                    if (start && end) {
+                        optionPeriods.forEach(option => {
+                            const optionDate = option.value;
+
+                            if (optionDate && !(optionDate >= start && optionDate <= end)) {
+                                selectPeriod.removeChild(option);
+                            }
+                        });
+                    }
                 }
             };
             removeNonValidPeriods();
