@@ -27,7 +27,7 @@ interface ObjectWithTranslation {
 }
 
 // Alternative: Model with metadata, using 2 coGroups + 1 coGroupSet.
-const combinationsToSkip = [
+const combinationCodesToSkip = [
     ["M", "PREGNANT"],
     ["M", "CHILDBEARING_AGE"],
 ];
@@ -109,7 +109,7 @@ export class DataSetCustomForm {
         const combinations = _.cartesianProduct(categoryOptionGroupsAll).map(categoryOptions => {
             const disaggregation = _.compact([antigen, ...categoryOptions]);
             const codes = disaggregation.map(co => co.code);
-            const toSkip = combinationsToSkip.some(codesToSkip =>
+            const toSkip = combinationCodesToSkip.some(codesToSkip =>
                 _.isEmpty(_.difference(codesToSkip, codes))
             );
             return toSkip ? undefined : disaggregation;
@@ -247,15 +247,17 @@ export class DataSetCustomForm {
                     "div",
                     { class: "tableGroup" },
                     categoryOptionGroupsArray
-                        .map((categoryOptionGroups, idx) =>
-                            h("table", { class: "dataValuesTable" }, [
+                        .map((categoryOptionGroups, idx) => {
+                            const disaggregations = this.getDisaggregationCombinations({
+                                categoryOptionGroups,
+                            });
+
+                            return h("table", { class: "dataValuesTable" }, [
                                 h(
                                     "thead",
                                     {},
                                     renderHeaderForGroup(
-                                        this.getDisaggregationCombinations({
-                                            categoryOptionGroups,
-                                        }),
+                                        disaggregations,
                                         categoryOptionGroupsArray.length > 1
                                     )
                                 ),
@@ -271,8 +273,8 @@ export class DataSetCustomForm {
                                         )
                                     )
                                 ),
-                            ])
-                        )
+                            ]);
+                        })
                         .concat(
                             this.renderTotalTables(antigen, dataElements, categoryOptionGroupsArray)
                         )

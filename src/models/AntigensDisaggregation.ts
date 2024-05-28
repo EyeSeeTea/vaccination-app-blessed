@@ -160,6 +160,7 @@ export class AntigensDisaggregation {
             .compact()
             .fromPairs()
             .value();
+
         return new AntigensDisaggregation(config, { antigens, disaggregation });
     }
 
