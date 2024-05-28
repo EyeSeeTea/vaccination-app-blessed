@@ -1,12 +1,13 @@
 module.exports = {
     collectCoverageFrom: ["src/**/*.js"],
     testPathIgnorePatterns: ["/node_modules/", "/cypress"],
-    transformIgnorePatterns: ["/node_modules/(?!@dhis2/d2-ui-group-editor)"],
+    transformIgnorePatterns: ["/node_modules/(?!@eyeseetea/d2-ui-components)"],
     modulePaths: ["src"],
     moduleDirectories: ["node_modules"],
     moduleNameMapper: {
         "\\.(css|scss)$": "<rootDir>/config/styleMock.js",
         "\\.(jpg|jpeg|png|svg)$": "<rootDir>/config/fileMock.js",
+        "^!raw-loader!(.*)$": "jest-transform-stub",
     },
     transform: {
         "^.+\\.[t|j]sx?$": "babel-jest",
