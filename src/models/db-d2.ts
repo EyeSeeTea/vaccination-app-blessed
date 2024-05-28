@@ -273,11 +273,7 @@ export default class DbD2 {
         const { pager, organisationUnits } = await this.api.get("/organisationUnits", {
             paging: true,
             pageSize: options.pageSize || 10,
-            filter: [
-                `id:in:[${_(ids)
-                    .take(options.pageSize)
-                    .join(",")}]`,
-            ],
+            filter: [`id:in:[${_(ids).take(options.pageSize).join(",")}]`],
             fields: ["id", "displayName", "path", "level", "ancestors[id,displayName,path,level]"],
         });
         const newPager = { ...pager, total: ids.length };
@@ -293,9 +289,7 @@ export default class DbD2 {
         if (_(categories).isEmpty()) {
             return [];
         } else {
-            return _(categories[0].categoryOptions)
-                .sortBy("displayName")
-                .value();
+            return _(categories[0].categoryOptions).sortBy("displayName").value();
         }
     }
 
@@ -405,9 +399,9 @@ export default class DbD2 {
         const dataValuesChunks = _.chunk(dataValuesToPost, 200);
 
         const responses = await promiseMap(dataValuesChunks, dataValuesChunk => {
-            return this.api.post("dataValueSets", { dataValues: dataValuesChunk }) as Promise<
-                DataValueResponse
-            >;
+            return this.api.post("dataValueSets", {
+                dataValues: dataValuesChunk,
+            }) as Promise<DataValueResponse>;
         });
 
         const errorResponses = responses.filter(response => {
@@ -482,11 +476,7 @@ export default class DbD2 {
 
     public async getDataValues(params: GetDataValuesParams): Promise<DataValue[]> {
         const parseDate = (date: Date | undefined, daysOffset = 0) =>
-            date
-                ? moment(date)
-                      .add(daysOffset, "days")
-                      .format("YYYY-MM-DD")
-                : undefined;
+            date ? moment(date).add(daysOffset, "days").format("YYYY-MM-DD") : undefined;
         const apiParams = {
             ...params,
             startDate: parseDate(params.startDate),

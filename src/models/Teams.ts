@@ -86,9 +86,7 @@ export class Teams {
                 ),
             ];
         } else if (teamDifference < 0) {
-            return _(allTeams)
-                .take(teams)
-                .value();
+            return _(allTeams).take(teams).value();
         } else {
             return allTeams;
         }
@@ -115,7 +113,7 @@ export class Teams {
                 displayShortName: name,
                 startDate,
                 endDate,
-                dimensionItemType: "CATEGORY_OPTION" ,
+                dimensionItemType: "CATEGORY_OPTION",
                 categories: [
                     {
                         id: categoryIdForTeams,
@@ -202,10 +200,7 @@ export function filterTeamsByNames(
     if (_.isEmpty(teams)) return [];
     const nameMatches = (teamName: string, campaignName: string) => {
         const splitStr = " - ";
-        const campaignNameFromTeam = teamName
-            .split(splitStr)
-            .slice(1)
-            .join(splitStr);
+        const campaignNameFromTeam = teamName.split(splitStr).slice(1).join(splitStr);
         const prefixRegexp = new RegExp("^Team \\d+" + splitStr);
         return Boolean(teamName.match(prefixRegexp) && campaignName === campaignNameFromTeam);
     };

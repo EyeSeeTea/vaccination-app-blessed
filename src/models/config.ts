@@ -166,12 +166,7 @@ function getCategoriesDisaggregation(
 export function getRvcCode(parts: Array<string | undefined>): string {
     const code = _(parts)
         .compact()
-        .map(part =>
-            part
-                .replace(/\s*/g, "")
-                .replace(/^RVC_/, "")
-                .toUpperCase()
-        )
+        .map(part => part.replace(/\s*/g, "").replace(/^RVC_/, "").toUpperCase())
         .join("_");
     return "RVC_" + code;
 }
@@ -269,8 +264,9 @@ function getAntigens(
     categoryOptionGroups: CategoryOptionGroup[]
 ): MetadataConfig["antigens"] {
     const categoriesByCode = _.keyBy(categories, "code");
-    const categoryOptions = _(categoriesByCode).getOrFail(baseConfig.categoryCodeForAntigens)
-        .categoryOptions;
+    const categoryOptions = _(categoriesByCode).getOrFail(
+        baseConfig.categoryCodeForAntigens
+    ).categoryOptions;
     const dataElementGroupsByCode = _.keyBy(dataElementGroups, "code");
     const categoryOptionGroupsByCode = _.keyBy(categoryOptionGroups, "code");
 
@@ -328,8 +324,9 @@ function getAntigens(
             const dosesIds = _(categoryOptionGroupsByCode)
                 .getOrFail(getRvcCode([categoryOption.code, "DOSES"]))
                 .categoryOptions.map(co => co.id);
-            const allDoses = _(categoriesByCode).getOrFail(baseConfig.categoryCodeForDoses)
-                .categoryOptions;
+            const allDoses = _(categoriesByCode).getOrFail(
+                baseConfig.categoryCodeForDoses
+            ).categoryOptions;
             const doses = _(allDoses)
                 .map(co =>
                     _(dosesIds).includes(co.id)
