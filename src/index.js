@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { Provider } from "@dhis2/app-runtime";
 import { init, config, getUserSettings, getManifest } from "d2";
 import "font-awesome/css/font-awesome.min.css";
 import { HashRouter } from "react-router-dom";
@@ -9,6 +10,7 @@ import _ from "lodash";
 import App from "./components/app/App";
 
 import "./locales";
+import { D2Api } from "@eyeseetea/d2-api/2.36";
 
 config.schemas = ["dataSet", "organisationUnit"];
 
@@ -66,16 +68,20 @@ async function main() {
     try {
         const d2 = await init({ baseUrl: apiUrl });
         window.d2 = d2; // Make d2 available in the console
+        const api = new D2Api({ baseUrl: baseUrl });
         loadHeaderBarTranslations(d2);
         const userSettings = await getUserSettings();
         configI18n(userSettings);
         const appConfig = await fetch("app-config.json", {
             credentials: "same-origin",
         }).then(res => res.json());
+
         ReactDOM.render(
-            <HashRouter>
-                <App d2={d2} appConfig={appConfig} />
-            </HashRouter>,
+            <Provider config={{ baseUrl, apiVersion: 30 }}>
+                <HashRouter>
+                    <App d2={d2} appConfig={appConfig} api={api} />
+                </HashRouter>
+            </Provider>,
             document.getElementById("root")
         );
     } catch (err) {

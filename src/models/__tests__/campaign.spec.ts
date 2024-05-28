@@ -49,17 +49,10 @@ describe("Campaign", () => {
             ];
 
             for (const level of _.range(1, 10)) {
-                const path =
-                    "/" +
-                    _(ids)
-                        .take(level)
-                        .join("/");
+                const path = "/" + _(ids).take(level).join("/");
                 const campaignWithOrgUnit = campaign.setOrganisationUnits([
                     {
-                        id:
-                            _(path)
-                                .split("/")
-                                .last() || "",
+                        id: _(path).split("/").last() || "",
                         path: path,
                     },
                 ]);

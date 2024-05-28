@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import i18n from "@dhis2/d2-i18n";
 import { withRouter } from "react-router";
 import _ from "lodash";
-import { withSnackbar, Wizard } from "d2-ui-components";
+import { withSnackbar, Wizard } from "@eyeseetea/d2-ui-components";
 import { LinearProgress } from "@material-ui/core";
 
 import Campaign from "../../models/campaign";
@@ -23,6 +23,7 @@ class CampaignWizard extends React.Component {
     static propTypes = {
         d2: PropTypes.object.isRequired,
         db: PropTypes.object.isRequired,
+        api: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         config: PropTypes.object.isRequired,
         snackbar: PropTypes.object.isRequired,
@@ -186,6 +187,7 @@ class CampaignWizard extends React.Component {
                 campaign,
                 onChange: this.onChange(step),
                 onCancel: this.goToConfiguration,
+                api: this.props.api,
             },
         }));
 

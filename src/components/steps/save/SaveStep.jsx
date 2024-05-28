@@ -6,7 +6,7 @@ import moment from "moment";
 import { withRouter } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import { Button, LinearProgress } from "@material-ui/core";
-import { withSnackbar } from "d2-ui-components";
+import { withSnackbar } from "@eyeseetea/d2-ui-components";
 
 import { getFullOrgUnitName } from "../../../models/organisation-units";
 import ExitWizardButton from "../../wizard/ExitWizardButton";
@@ -87,10 +87,7 @@ class SaveStep extends React.Component {
         } else {
             const { pager, objects } = paginatedObjects;
             const othersCount = pager.total - objects.length;
-            const names =
-                _(objects)
-                    .sortBy()
-                    .join(", ") || i18n.t("[None]");
+            const names = _(objects).sortBy().join(", ") || i18n.t("[None]");
             if (othersCount > 0) {
                 return i18n.t("[{{total}}] {{names}} and {{othersCount}} other(s)", {
                     total: pager.total,

@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import i18n from "@dhis2/d2-i18n";
-import { withSnackbar } from "d2-ui-components";
+import { withSnackbar } from "@eyeseetea/d2-ui-components";
 import ReactDOM from "react-dom";
 import moment from "moment";
 
@@ -97,8 +97,8 @@ class DataEntry extends React.Component {
             // Remove non-valid periods
             const periodDates = await getPeriodDatesFromDataSetId(dataSetId, d2);
             const removeNonValidPeriods = () => {
-                const selectedDataSetId = iframeDocument.querySelector("#selectedDataSetId")
-                    .selectedOptions[0].value;
+                const selectedDataSetId =
+                    iframeDocument.querySelector("#selectedDataSetId").selectedOptions[0].value;
                 if (selectedDataSetId === dataSetId) {
                     const selectPeriod = iframeDocument.querySelector("#selectedPeriodId");
                     const optionPeriods = Array.from(selectPeriod.childNodes);
@@ -145,7 +145,8 @@ class DataEntry extends React.Component {
         const { isDataEntryIdValid } = this.state;
         const { d2, pageVisited } = this.props;
         const dataEntryUrl = getDhis2Url(d2, "/dhis-web-dataentry/index.action");
-        const help = i18n.t(`Select a) site where vaccination was performed, b) Reactive vaccination data set available at site level c) date of vaccination d) team that performed vaccination.
+        const help =
+            i18n.t(`Select a) site where vaccination was performed, b) Reactive vaccination data set available at site level c) date of vaccination d) team that performed vaccination.
 
         Then enter data for the fields shown in the screen.`);
         const subtitle = i18n.t(

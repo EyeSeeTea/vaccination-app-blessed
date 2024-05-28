@@ -12,6 +12,7 @@ module.exports = {
     rules: {
         "no-console": ["warn", { allow: ["debug", "warn", "error"] }],
         "@typescript-eslint/camelcase": "off",
+        "@typescript-eslint/prefer-as-const": "off",
         "react/no-find-dom-node": "off",
         "react/no-string-refs": "off",
         "import/no-webpack-loader-syntax": "off",

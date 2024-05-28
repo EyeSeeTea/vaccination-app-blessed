@@ -185,7 +185,10 @@ export default class Campaign {
             },
         });
 
-        const [campaignDataSets, extraDataSets = []] = _.partition(dataSets, ds => ds.id === dataSetId);
+        const [campaignDataSets, extraDataSets = []] = _.partition(
+            dataSets,
+            ds => ds.id === dataSetId
+        );
         const dataSet = campaignDataSets?.[0];
 
         if (!dataSet) throw new Error(`Dataset id=${dataSetId} not found`);
@@ -358,11 +361,7 @@ export default class Campaign {
         const { organisationUnits } = this.data;
 
         const allOrgUnitsInAcceptedLevels = _(organisationUnits).every(ou =>
-            _(this.selectableLevels).includes(
-                _(ou.path)
-                    .countBy()
-                    .get("/") || 0
-            )
+            _(this.selectableLevels).includes(_(ou.path).countBy().get("/") || 0)
         );
         const levels = this.selectableLevels.join("/");
 
@@ -373,10 +372,7 @@ export default class Campaign {
             _(organisationUnits).isEmpty() ? getError("no_organisation_units_selected") : [],
         ];
 
-        return _(errorsList)
-            .flatten()
-            .compact()
-            .value();
+        return _(errorsList).flatten().compact().value();
     }
 
     public async getOrganisationUnitsWithName(): Promise<PaginatedObjects<OrganisationUnit>> {

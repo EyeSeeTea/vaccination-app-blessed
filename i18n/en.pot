@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2024-05-17T10:07:12.143Z\n"
-"PO-Revision-Date: 2024-05-17T10:07:12.143Z\n"
+"POT-Creation-Date: 2024-05-28T08:31:26.574Z\n"
+"PO-Revision-Date: 2024-05-28T08:31:26.574Z\n"
 
 msgid "Campaigns"
 msgstr ""
@@ -96,6 +96,21 @@ msgid ""
 msgstr ""
 
 msgid "Create Campaign"
+msgstr ""
+
+msgid "R/W"
+msgstr ""
+
+msgid "Read"
+msgstr ""
+
+msgid "Private"
+msgstr ""
+
+msgid "Metadata"
+msgstr ""
+
+msgid "Data"
 msgstr ""
 
 msgid "Cannot load campaign"
