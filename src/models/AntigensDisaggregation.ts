@@ -403,7 +403,7 @@ export class AntigensDisaggregation {
             };
         });
 
-        return AntigenDisaggregation.create({
+        const disaggregation = AntigenDisaggregation.create({
             id: antigenConfig.id,
             name: antigenConfig.name,
             code: antigenConfig.code,
@@ -411,6 +411,10 @@ export class AntigensDisaggregation {
             doses: antigenConfig.doses,
             isTypeSelectable: antigenConfig.isTypeSelectable,
         });
+
+        return !disaggregation.isTypeSelectable
+            ? disaggregation.updateCampaignType("reactive")
+            : disaggregation;
     }
 
     public async getCocMetadata(db: DbD2): Promise<CocMetadata> {
