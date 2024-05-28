@@ -15,13 +15,12 @@ import DbD2 from "../../models/db-d2";
 import { getMetadataConfig } from "../../models/config";
 import { hasCurrentUserRoles } from "../../utils/permissions";
 import { isTestEnv } from "../../utils/dhis2";
-import { D2Api } from "@eyeseetea/d2-api/2.36";
 
 class App extends Component {
     static propTypes = {
         d2: PropTypes.object.isRequired,
         appConfig: PropTypes.object.isRequired,
-        api: D2Api,
+        api: PropTypes.object.isRequired,
     };
 
     state = {
