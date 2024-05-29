@@ -249,7 +249,8 @@ export class DataSetCustomForm {
                     categoryOptionGroupsArray
                         .map((categoryOptionGroups, idx) => {
                             const disaggregations = this.getDisaggregationCombinations({
-                                categoryOptionGroups,
+                                categoryOptionGroups:
+                                    removeCampaignTypeCategory(categoryOptionGroups),
                             });
 
                             return h("table", { class: "dataValuesTable" }, [
@@ -582,6 +583,17 @@ export class DataSetCustomForm {
             ]
         );
     }
+}
+
+function removeCampaignTypeCategory(categoryOptionGroups: CategoryOption[][]) {
+    return _(categoryOptionGroups)
+        .reject(categoryOptions => {
+            const isCampaignType = _(categoryOptions).some(categoryOption => {
+                return ["RVC_PREVENTIVE", "RVC_REACTIVE"].includes(categoryOption.code);
+            });
+            return isCampaignType;
+        })
+        .value();
 }
 
 export function renderHeaderForGroup(
