@@ -83,9 +83,7 @@ function isDataSetInUserOrgUnits(d2, dataSet) {
     const userOrgUnits = getCurrentUserDataViewOrganisationUnits(d2);
 
     return dataSet.organisationUnits.every(dataSetOrgUnit =>
-        _(dataSetOrgUnit.path.split("/"))
-            .intersection(userOrgUnits)
-            .isNotEmpty()
+        _(dataSetOrgUnit.path.split("/")).intersection(userOrgUnits).isNotEmpty()
     );
 }
 

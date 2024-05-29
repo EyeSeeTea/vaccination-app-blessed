@@ -1,7 +1,7 @@
 import React from "react";
 import Linkify from "react-linkify";
 import _ from "lodash";
-import { withSnackbar, ConfirmationDialog } from "d2-ui-components";
+import { withSnackbar, ConfirmationDialog } from "@eyeseetea/d2-ui-components";
 import { withStyles } from "@material-ui/core/styles";
 import {
     LinearProgress,
@@ -232,4 +232,6 @@ const styles = (_theme: Theme) =>
         },
     });
 
-export default withRouter(withSnackbar(withStyles(styles)(TargetPopulationDialog)));
+const component = withSnackbar(withStyles(styles)(TargetPopulationDialog));
+
+export default withRouter(component as any) as any;

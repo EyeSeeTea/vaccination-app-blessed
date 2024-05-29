@@ -12,7 +12,7 @@ import { formatDay } from "../utils/date";
 import { getDataElements, CocMetadata } from "./AntigensDisaggregation";
 import { Dashboard, DashboardMetadata } from "./Dashboard";
 import { Teams, CategoryOptionTeam } from "./Teams";
-import { getDashboardCode, getByIndex, baseConfig, MetadataConfig } from "./config";
+import { getDashboardCode, getByIndex, baseConfig } from "./config";
 
 interface DataSetWithSections {
     sections: Array<{ id: string; name: string; dataSet: { id: string } }>;
@@ -51,11 +51,8 @@ export default class CampaignDb {
 
     constructor(public campaign: Campaign) {
         const { categories, categoryCombos, categoryCodeForAgeGroup } = campaign.config;
-        const {
-            categoryCodeForTeams,
-            categoryCodeForDoses,
-            categoryCodeForAntigens,
-        } = campaign.config;
+        const { categoryCodeForTeams, categoryCodeForDoses, categoryCodeForAntigens } =
+            campaign.config;
         const { categoryComboCodeForTeams } = campaign.config;
         const categoriesByCode = _(categories).keyBy("code");
 

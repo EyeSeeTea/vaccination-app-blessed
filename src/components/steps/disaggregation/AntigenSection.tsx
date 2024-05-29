@@ -10,7 +10,6 @@ import {
     Table,
     TableBody,
     TableCell,
-    TableHead,
     TableRow,
 } from "@material-ui/core";
 import { createStyles, WithStyles, Theme } from "@material-ui/core";

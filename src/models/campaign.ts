@@ -5,7 +5,7 @@ import moment from "moment";
 import { PaginatedObjects, OrganisationUnitPathOnly, Response } from "./db.types";
 import DbD2, { ApiResponse, toStatusResponse } from "./db-d2";
 import { AntigensDisaggregation, SectionForDisaggregation } from "./AntigensDisaggregation";
-import { MetadataConfig, getDashboardCode, getByIndex, DataSet, baseConfig } from "./config";
+import { MetadataConfig, getDashboardCode, getByIndex, DataSet } from "./config";
 import { AntigenDisaggregationEnabled } from "./AntigensDisaggregation";
 import {
     TargetPopulation,
@@ -185,8 +185,11 @@ export default class Campaign {
             },
         });
 
-        const [campaignDataSets, extraDataSets] = _.partition(dataSets, ds => ds.id === dataSetId);
-        const dataSet = campaignDataSets[0];
+        const [campaignDataSets, extraDataSets = []] = _.partition(
+            dataSets,
+            ds => ds.id === dataSetId
+        );
+        const dataSet = campaignDataSets?.[0];
 
         if (!dataSet) throw new Error(`Dataset id=${dataSetId} not found`);
 
@@ -293,7 +296,7 @@ export default class Campaign {
             }
         );
 
-        const [keysWithErrors, errors] = _(results)
+        const [keysWithErrors, errors = []] = _(results)
             .map(([key, result]) => (result.status ? null : [key, result.error]))
             .compact()
             .unzip()
@@ -358,11 +361,7 @@ export default class Campaign {
         const { organisationUnits } = this.data;
 
         const allOrgUnitsInAcceptedLevels = _(organisationUnits).every(ou =>
-            _(this.selectableLevels).includes(
-                _(ou.path)
-                    .countBy()
-                    .get("/") || 0
-            )
+            _(this.selectableLevels).includes(_(ou.path).countBy().get("/") || 0)
         );
         const levels = this.selectableLevels.join("/");
 
@@ -373,10 +372,7 @@ export default class Campaign {
             _(organisationUnits).isEmpty() ? getError("no_organisation_units_selected") : [],
         ];
 
-        return _(errorsList)
-            .flatten()
-            .compact()
-            .value();
+        return _(errorsList).flatten().compact().value();
     }
 
     public async getOrganisationUnitsWithName(): Promise<PaginatedObjects<OrganisationUnit>> {

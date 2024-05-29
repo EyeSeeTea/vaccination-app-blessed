@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2024-05-15T11:45:24.684Z\n"
+"POT-Creation-Date: 2024-05-28T08:31:26.574Z\n"
 "PO-Revision-Date: 2018-10-25T09:02:35.143Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -106,6 +106,21 @@ msgstr ""
 msgid "Create Campaign"
 msgstr "Crear Campaña"
 
+msgid "R/W"
+msgstr ""
+
+msgid "Read"
+msgstr ""
+
+msgid "Private"
+msgstr ""
+
+msgid "Metadata"
+msgstr ""
+
+msgid "Data"
+msgstr ""
+
 msgid "Cannot load campaign"
 msgstr "No se puede cargar la campaña"
 
@@ -145,9 +160,8 @@ msgstr ""
 "Si abandona esta página y vuelve de nuevo, quizá se encuentre con que la "
 "información no se haya actualizado aún. No se preocupe, la información no se "
 "perdió, aparecerá actualizada en unos minutos.\n"
-"La fuente de los datos puede ser https://hmisocba.msf.es/external-static/"
-"Denominators_Tool_OCBA.xlsm o bien usted tenga acceso a estimaciones de "
-"datos locales (e.g. Ministerio de Salud)"
+"La fuente de los datos puede ser {{- hyperlink}} o bien usted tenga acceso a "
+"estimaciones de datos locales (e.g. Ministerio de Salud)"
 
 msgid ""
 "This is the last available population data. Modify it for your campaign and "
@@ -334,8 +348,17 @@ msgstr "Ayuda"
 msgid "Back"
 msgstr "Atrás"
 
+msgid "Reactive"
+msgstr "Reactiva"
+
+msgid "Preventive"
+msgstr "Preventiva"
+
 msgid "Disaggregation"
 msgstr "Desagregación"
+
+msgid "Extra Activities"
+msgstr "Actividades Extra"
 
 msgid "Field cannot be blank"
 msgstr "El campo no puede estar vacío"
@@ -361,10 +384,13 @@ msgid "[None]"
 msgstr "[Vacío]"
 
 msgid "[{{total}}] {{names}} and {{othersCount}} other(s)"
-msgstr "[{{total}}] {{names}} y {{othersCount}} otros"
+msgstr "[{{total}}] {{names}} y {{othersCount}} otro(s)"
 
 msgid "doses"
 msgstr "dosis"
+
+msgid "type"
+msgstr "tipo"
 
 msgid "age groups"
 msgstr "grupos de edad"
@@ -549,7 +575,7 @@ msgid ""
 "-> {{ageGroups}}"
 msgstr ""
 "La unidad organizativa {{organisationUnit}} tiene un valor de distribución "
-"de población inválido para los rangos de edad -> {{value}}"
+"de población inválido para los rangos de edad -> {{ageGroups}}"
 
 msgid ""
 "Org unit {{organisationUnit}} has an invalid total value for antigen "

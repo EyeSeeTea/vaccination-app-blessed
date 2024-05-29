@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: i18next-conv\n"
-"POT-Creation-Date: 2024-05-15T11:45:24.684Z\n"
+"POT-Creation-Date: 2024-05-28T08:31:26.574Z\n"
 "PO-Revision-Date: 2018-11-15T11:18:10.896Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -106,6 +106,21 @@ msgstr ""
 msgid "Create Campaign"
 msgstr "Créer une campagne"
 
+msgid "R/W"
+msgstr ""
+
+msgid "Read"
+msgstr ""
+
+msgid "Private"
+msgstr ""
+
+msgid "Metadata"
+msgstr ""
+
+msgid "Data"
+msgstr ""
+
 msgid "Cannot load campaign"
 msgstr "Impossible de charger la campagne"
 
@@ -148,9 +163,8 @@ msgstr ""
 "que vos informations n'ont pas été prises en compte. Ne vous inquiétez pas, "
 "vos informations n'ont pas été perdues, elles apparaitront quelques minutes "
 "plus tard.\n"
-"Votre source de données peut être https://hmisocba.msf.es/external-static/"
-"Denominators_Tool_OCBA.xlsm ou bien des estimations locales si vous y avez "
-"accès (c.a.d. Ministère de la Santé)."
+"Votre source de données peut être {{- hyperlink}} ou bien des estimations "
+"locales si vous y avez accès (c.a.d. Ministère de la Santé)."
 
 msgid ""
 "This is the last available population data. Modify it for your campaign and "
@@ -340,8 +354,17 @@ msgstr "Aide"
 msgid "Back"
 msgstr "Retour"
 
+msgid "Reactive"
+msgstr ""
+
+msgid "Preventive"
+msgstr ""
+
 msgid "Disaggregation"
 msgstr "Désagrégation"
+
+msgid "Extra Activities"
+msgstr ""
 
 msgid "Field cannot be blank"
 msgstr "Le champ ne peut pas être vide"
@@ -371,6 +394,9 @@ msgstr "[{{total}}] {{names}} et {{othersCount}} autre (s)"
 
 msgid "doses"
 msgstr "doses"
+
+msgid "type"
+msgstr ""
 
 msgid "age groups"
 msgstr "groupes d'âge"
@@ -466,7 +492,9 @@ msgstr ""
 "des données associées"
 
 msgid "Coverage by Site {{- period}} (do not edit this chart)"
-msgstr "Couverture Vaccinale par Site de Santé (ne modifiez pas ce graphique)"
+msgstr ""
+"Couverture Vaccinale par Site de Santé {{- period}} (ne modifiez pas ce "
+"graphique)"
 
 msgid "Coverage by Area {{- period}} (do not edit this chart)"
 msgstr ""
@@ -538,7 +566,7 @@ msgstr ""
 "Le champ {{field}} ne peut pas être vide si le champ {{other}} est défini"
 
 msgid "Field {{field}} cannot longer than {{n}} chars"
-msgstr "Le champ {{champ}}} ne peut pas dépasser {{n}} caractères"
+msgstr "Le champ {{field}}} ne peut pas dépasser {{n}} caractères"
 
 msgid "Select at least one antigen"
 msgstr "Sélectionnez au moins un antigène"
@@ -567,8 +595,8 @@ msgid ""
 "Org unit {{organisationUnit}} has an invalid total value for antigen "
 "{{antigen}} ({{ageGroups}}) -> {{- value}}"
 msgstr ""
-"L'unité d´organisation {{unité d´organisation}} a une valeur totale non "
-"valide pour l'antigène {{antigen}} ({{ageGroups}}) -> {{- value}}"
+"L'unité d´organisation {{organisationUnit}} a une valeur totale non valide "
+"pour l'antigène {{antigen}} ({{ageGroups}}) -> {{- value}}"
 
 msgid "Number of teams must smaller than {{value}}"
 msgstr "Le nombre d'équipes doit être inférieur à {{value}}"

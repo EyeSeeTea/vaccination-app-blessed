@@ -1,6 +1,5 @@
 import { MetadataConfig } from "./config";
 import _ from "lodash";
-const { createElement } = require("typed-html");
 import i18n from "@dhis2/d2-i18n";
 
 import Campaign, { Antigen } from "./campaign";
@@ -9,6 +8,7 @@ import "../utils/lodash-mixins";
 import { CategoryOption, getCode, getId } from "./db.types";
 import { DataInput, getDataInputFromCampaign } from "./CampaignDb";
 
+const { createElement } = require("typed-html");
 const contentScript = require("!raw-loader!./custom-form-resources/content-script.js").default;
 const cssContents = require("!raw-loader!./custom-form-resources/form.css").default;
 
@@ -27,7 +27,10 @@ interface ObjectWithTranslation {
 }
 
 // Alternative: Model with metadata, using 2 coGroups + 1 coGroupSet.
-const combinationsToSkip = [["M", "PREGNANT"], ["M", "CHILDBEARING_AGE"]];
+const combinationCodesToSkip = [
+    ["M", "PREGNANT"],
+    ["M", "CHILDBEARING_AGE"],
+];
 
 function h(tagName: string, attributes: object = {}, children: string | string[] = []) {
     const attrs = Object.keys(attributes).length === 0 ? undefined : attributes;
@@ -106,7 +109,7 @@ export class DataSetCustomForm {
         const combinations = _.cartesianProduct(categoryOptionGroupsAll).map(categoryOptions => {
             const disaggregation = _.compact([antigen, ...categoryOptions]);
             const codes = disaggregation.map(co => co.code);
-            const toSkip = combinationsToSkip.some(codesToSkip =>
+            const toSkip = combinationCodesToSkip.some(codesToSkip =>
                 _.isEmpty(_.difference(codesToSkip, codes))
             );
             return toSkip ? undefined : disaggregation;
@@ -201,7 +204,7 @@ export class DataSetCustomForm {
             )
             .values()
             .map(dataElementsGroup => {
-                const categoryOptionGroups = _(dataElementsGroup[0].categories)
+                const categoryOptionGroups = _(dataElementsGroup[0]?.categories)
                     .reject(category => _(outerCategories).includes(category.code))
                     .map(cat => cat.categoryOptions)
                     .value();
@@ -217,7 +220,7 @@ export class DataSetCustomForm {
                         [categoryOptionGroups],
                         _(categoryOptionGroups).size() <= 1
                             ? null
-                            : categoryOptionGroups[0].map(group => [
+                            : (categoryOptionGroups[0] || []).map(group => [
                                   [group],
                                   ..._.tail(categoryOptionGroups),
                               ]),
@@ -244,15 +247,18 @@ export class DataSetCustomForm {
                     "div",
                     { class: "tableGroup" },
                     categoryOptionGroupsArray
-                        .map((categoryOptionGroups, idx) =>
-                            h("table", { class: "dataValuesTable" }, [
+                        .map((categoryOptionGroups, idx) => {
+                            const disaggregations = this.getDisaggregationCombinations({
+                                categoryOptionGroups:
+                                    removeCampaignTypeCategory(categoryOptionGroups),
+                            });
+
+                            return h("table", { class: "dataValuesTable" }, [
                                 h(
                                     "thead",
                                     {},
                                     renderHeaderForGroup(
-                                        this.getDisaggregationCombinations({
-                                            categoryOptionGroups,
-                                        }),
+                                        disaggregations,
                                         categoryOptionGroupsArray.length > 1
                                     )
                                 ),
@@ -268,8 +274,8 @@ export class DataSetCustomForm {
                                         )
                                     )
                                 ),
-                            ])
-                        )
+                            ]);
+                        })
                         .concat(
                             this.renderTotalTables(antigen, dataElements, categoryOptionGroupsArray)
                         )
@@ -309,7 +315,11 @@ export class DataSetCustomForm {
                     "tbody",
                     {},
                     h("tr", { class: `derow de-${dataElement.id} secondary` }, [
-                        h("td", { class: "data-element" }, dataElement.name),
+                        h(
+                            "td",
+                            { class: "data-element", "data-translate": true },
+                            dataElement.name
+                        ),
                         totalTd(
                             dataElement.id,
                             _.flatMap(categoryOptionGroupsArray, categoryOptionGroupsGroups =>
@@ -332,10 +342,10 @@ export class DataSetCustomForm {
         const { antigen, dataElements: allDataElements } = disaggregation;
         const dataElementHasAntigenDisaggregation = (dataElement: DataElement) =>
             _(dataElement.categories).some(
-                deCategory => deCategory.code == this.config.categoryCodeForAntigens
+                deCategory => deCategory.code === this.config.categoryCodeForAntigens
             );
 
-        const [dosesDataElements, qualityDataElements] = _(allDataElements)
+        const [dosesDataElements = [], qualityDataElements = []] = _(allDataElements)
             .filter(dataElementHasAntigenDisaggregation)
             .partition(de => de.code.match(this.dataElementCodeDosesRegexp))
             .value();
@@ -431,8 +441,7 @@ export class DataSetCustomForm {
             "ul",
             {
                 role: "tablist",
-                class:
-                    "ui-tabs-nav ui-corner-all ui-helper-reset ui-helper-clearfix ui-widget-header",
+                class: "ui-tabs-nav ui-corner-all ui-helper-reset ui-helper-clearfix ui-widget-header",
             },
             tabs.map(tab =>
                 h(
@@ -574,6 +583,17 @@ export class DataSetCustomForm {
             ]
         );
     }
+}
+
+function removeCampaignTypeCategory(categoryOptionGroups: CategoryOption[][]) {
+    return _(categoryOptionGroups)
+        .reject(categoryOptions => {
+            const isCampaignType = _(categoryOptions).some(categoryOption => {
+                return ["RVC_PREVENTIVE", "RVC_REACTIVE"].includes(categoryOption.code);
+            });
+            return isCampaignType;
+        })
+        .value();
 }
 
 export function renderHeaderForGroup(
