@@ -151,6 +151,10 @@ export interface Ref {
     id: string;
 }
 
+export interface NamedRef extends Ref {
+    name: string;
+}
+
 export interface Metadata {
     dataSets?: Array<DataSet>;
     dataEntryForms?: Array<DataEntryForm>;
@@ -401,6 +405,10 @@ export interface DashboardMetadataRequest {
 
 export function getId<T extends { id: string }>(obj: T): string {
     return obj.id;
+}
+
+export function getRef<T extends { id: string }>(obj: T): Ref {
+    return { id: obj.id };
 }
 
 export function getCode<T extends { code: string }>(obj: T): string {
