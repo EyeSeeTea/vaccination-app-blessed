@@ -53,7 +53,7 @@ export const baseConfig = {
     dataElementCodeForAgeDistribution: "RVC_AGE_DISTRIBUTION",
     dataElementCodeForPopulationByAge: "RVC_POPULATION_BY_AGE",
     dataSetDashboardCodePrefix: "RVC_CAMPAIGN",
-    dataSetExtraCodes: ["DS_NSd_3"],
+    dataSetExtraCodes: ["DS_VPMVCd"],
     userRoleNames: {
         manager: [userRoles.campaignManager],
         feedback: [userRoles.feedback],
