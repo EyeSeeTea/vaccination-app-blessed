@@ -40,7 +40,7 @@ class CampaignWizard extends React.Component {
     }
 
     async componentDidMount() {
-        const { db, config, match, snackbar, history } = this.props;
+        const { db, config, match } = this.props;
 
         try {
             const campaign = this.isEdit()
