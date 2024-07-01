@@ -16,6 +16,7 @@ import {
     Indicator,
     getId,
     getCode,
+    NamedRef,
 } from "./db.types";
 import { sortAgeGroups } from "../utils/age-groups";
 
@@ -114,6 +115,7 @@ export interface MetadataConfig extends BaseConfig {
         displayName: string;
         code: string;
         dataElements: { id: string; code: string; optional: boolean; order: number }[];
+        categoriesOverride: Record<Code, { options: NamedRef[] }>;
         ageGroups: Array<CategoryOption[][]>;
         doses: Array<{ id: string; code: string; name: string; displayName: string }>;
         isTypeSelectable: boolean;
@@ -125,6 +127,8 @@ export interface MetadataConfig extends BaseConfig {
         extraActivities: DataSet[];
     };
 }
+
+type Code = string;
 
 export type DataSet = { id: string; name: string; code: string };
 
@@ -347,6 +351,7 @@ function getAntigens(
                 displayName: categoryOption.displayName,
                 code: categoryOption.code,
                 dataElements: dataElementSorted,
+                categoriesOverride: getCategoriesOverride(categoryOption, categoryOptionGroups),
                 ageGroups: ageGroups,
                 doses: doses,
                 isTypeSelectable: antigenIdsSelectable.has(categoryOption.id),
@@ -355,6 +360,28 @@ function getAntigens(
     );
 
     return antigensMetadata;
+}
+
+function getCategoriesOverride(
+    antigen: CategoryOption,
+    categoryOptionGroups: CategoryOptionGroup[]
+): MetadataConfig["antigens"][0]["categoriesOverride"] {
+    const overridesPrefix = getRvcCode([antigen.code, "CATEGORY_OVERRIDE"]);
+
+    return _(categoryOptionGroups)
+        .filter(cog => cog.code.startsWith(overridesPrefix))
+        .map(cog => {
+            const categoryCode = cog.code.match(/CATEGORY_OVERRIDE_(.*)$/)?.[1];
+            if (!categoryCode) return;
+
+            return [categoryCode, { options: cog.categoryOptions }] as [
+                Code,
+                { options: typeof cog.categoryOptions }
+            ];
+        })
+        .compact()
+        .fromPairs()
+        .value();
 }
 
 function getPopulationMetadata(
