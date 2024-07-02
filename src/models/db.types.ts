@@ -119,7 +119,7 @@ export interface Attribute {
     id: string;
     code: string;
     valueType: "TEXT" | "BOOLEAN";
-    displayName: string;
+    name: string;
 }
 
 export interface AttributeValue {

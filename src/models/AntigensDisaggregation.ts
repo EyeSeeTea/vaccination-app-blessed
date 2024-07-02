@@ -478,7 +478,7 @@ function getCategoryOptions(
                     .compact()
                     .value();
 
-                return optionsFiltered.length == 0 ? null : optionsFiltered;
+                return optionsFiltered.length === 0 ? null : optionsFiltered;
             })
             .compact()
             .value();

@@ -302,7 +302,7 @@ function getAntigens(
                 getDataElements("OPTIONAL")
             );
 
-            const dataElementSorted = _.orderBy(dataElementsForAntigens, "order");
+            const dataElementSorted = _.orderBy(dataElementsForAntigens, de => de.order);
 
             const mainAgeGroups = _(categoryOptionGroupsByCode).getOrFail(
                 getRvcCode([categoryOption.code, "AGE_GROUP"])
@@ -315,7 +315,7 @@ function getAntigens(
                 const codePrefix = getRvcCode([
                     categoryOption.code,
                     "AGE_GROUP",
-                    mainAgeGroup.displayName,
+                    mainAgeGroup.name,
                 ]);
                 const disaggregatedAgeGroups = _(categoryOptionGroups)
                     .filter(cog => cog.code.startsWith(codePrefix))
@@ -420,7 +420,7 @@ function getPopulationMetadata(
 
 function getAttributes(attributes: Attribute[]) {
     const attributesByCode = _(attributes).keyBy(attribute => attribute.code);
-    const attributesByName = _(attributes).keyBy(attribute => attribute.displayName);
+    const attributesByName = _(attributes).keyBy(attribute => attribute.name);
 
     return {
         app: attributesByCode.getOrFail(baseConfig.attributeCodeForApp),
@@ -432,7 +432,7 @@ function getAttributes(attributes: Attribute[]) {
 function getDefaults(metadata: RawMetadataConfig): MetadataConfig["defaults"] {
     return {
         categoryOptionCombo: _(metadata.categoryOptionCombos)
-            .keyBy("displayName")
+            .keyBy(coc => coc.displayName)
             .getOrFail("default"),
     };
 }
