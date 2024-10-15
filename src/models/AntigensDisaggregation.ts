@@ -56,7 +56,7 @@ export class AntigenDisaggregation extends Struct<AntigenDisaggregationData>() {
             .find(value => value.selected);
 
         const selectedCode = selected ? selected.option.code : undefined;
-        return selectedCode === baseConfig.categoryOptionCodePreventive ? "preventive" : "reactive";
+        return selectedCode === baseConfig.categoryOptionCodeReactive ? "reactive" : "preventive";
     }
 
     updateCampaignType(type: CampaignType): AntigenDisaggregation {
@@ -395,7 +395,7 @@ export class AntigensDisaggregation {
         });
 
         return !disaggregation.isTypeSelectable
-            ? disaggregation.updateCampaignType("reactive")
+            ? disaggregation.updateCampaignType("preventive")
             : disaggregation;
     }
 
