@@ -158,7 +158,7 @@ function validateDataInputPeriods(options) {
 
         const allMessages = [
             ...messages,
-            allowRetrospectiveData ? "This data set is temporally open for data entry" : null,
+            allowRetrospectiveData ? "<b>Data set temporally open for data entry</b>" : null,
         ].filter(Boolean);
 
         const messagesHtml = `<div>${allMessages.map(msg => `<p>${msg}</p>`).join("")}</div>`;
@@ -167,7 +167,10 @@ function validateDataInputPeriods(options) {
             div.insertAdjacentHTML("afterbegin", messagesHtml);
 
             if (!allowRetrospectiveData) {
-                div.querySelectorAll("input").forEach(input => (input.disabled = true));
+                div.querySelectorAll("input").forEach(input => {
+                    input.disabled = true;
+                    input.style.backgroundColor = "#EEE";
+                });
             }
         });
     }
@@ -210,26 +213,31 @@ function parseJson(s, defaultValue) {
 }
 
 async function getDataInputPeriodsFromDataSet(options, dataSetId) {
-    const fields = "attributeValues[attribute[code],value]";
+    const defaultDataInput = options.dataInput;
+
     try {
+        const fields = "attributeValues[attribute[code],value]";
         const res = await fetch(`../api/dataSets/${dataSetId}.json?fields=${fields}`);
         const jsonRes = await res.json();
+        const code = options.attributeCodeForDataInputPeriods;
+        const attributeValue = jsonRes.attributeValues.find(
+            attributeValue => attributeValue.attribute.code === code
+        );
+
+        return attributeValue ? parseJson(attributeValue.value, defaultDataInput) : {};
     } catch (err) {
         console.error("Error fetching data set:", err);
-        return {};
+        return defaultDataInput;
     }
-    const code = options.attributeCodeForDataInputPeriods;
-    const attributeValue = jsonRes.attributeValues.find(
-        attributeValue => attributeValue.attribute.code === code
-    );
-
-    return attributeValue ? parseJson(attributeValue.value, {}) : {};
 }
 
 // eslint-disable-next-line no-unused-vars
 function init(options) {
     $(document).on("dhis2.de.event.formLoaded", async (ev, dataSetId) => {
-        dataInputPeriodsFromDataSet = await getDataInputPeriodsFromDataSet(options, dataSetId);
+        const dataInputPeriodsFromDataSet = await getDataInputPeriodsFromDataSet(
+            options,
+            dataSetId
+        );
         const fullOptions = { ...options, dataInput: dataInputPeriodsFromDataSet };
 
         applyChangesToForm(fullOptions);
