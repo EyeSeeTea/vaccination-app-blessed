@@ -209,19 +209,27 @@ function parseJson(s, defaultValue) {
     }
 }
 
+async function getDataInputPeriodsFromDataSet(options, dataSetId) {
+    const fields = "attributeValues[attribute[code],value]";
+    try {
+        const res = await fetch(`../api/dataSets/${dataSetId}.json?fields=${fields}`);
+        const jsonRes = await res.json();
+    } catch (err) {
+        console.error("Error fetching data set:", err);
+        return {};
+    }
+    const code = options.attributeCodeForDataInputPeriods;
+    const attributeValue = jsonRes.attributeValues.find(
+        attributeValue => attributeValue.attribute.code === code
+    );
+
+    return attributeValue ? parseJson(attributeValue.value, {}) : {};
+}
+
 // eslint-disable-next-line no-unused-vars
 function init(options) {
     $(document).on("dhis2.de.event.formLoaded", async (ev, dataSetId) => {
-        const fields = "attributeValues[attribute[code],value]";
-        const res = await fetch(`../api/dataSets/${dataSetId}.json?fields=${fields}`);
-        const jsonRes = await res.json();
-        const code = options.attributeCodeForDataInputPeriods;
-        const attributeValue = jsonRes.attributeValues.find(
-            attributeValue => attributeValue.attribute.code === code
-        );
-        const dataInputPeriodsFromDataSet = attributeValue
-            ? parseJson(attributeValue.value, {})
-            : {};
+        dataInputPeriodsFromDataSet = await getDataInputPeriodsFromDataSet(options, dataSetId);
         const fullOptions = { ...options, dataInput: dataInputPeriodsFromDataSet };
 
         applyChangesToForm(fullOptions);
