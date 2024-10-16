@@ -12,7 +12,6 @@ import {
     MetadataGetParams,
     ModelName,
     MetadataFields,
-    Attribute,
     DataEntryForm,
     DataValueResponse,
     Response,
