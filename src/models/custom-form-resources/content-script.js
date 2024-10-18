@@ -52,7 +52,6 @@ var processWideTables = function () {
                 }
             });
         });
-    $("#contentDiv").hide();
 };
 
 var highlightDataElementRows = function () {
@@ -130,6 +129,7 @@ var runValidations = function (options, ev, dataSetId, dataValue) {
 
 function validateDataInputPeriods(options) {
     const { dataInput, translations } = options;
+    const { allowRetrospectiveData } = dataInput;
     const selectedPeriod = dhis2.de.getSelectedPeriod().startDate;
     const currentDate = new Date().toISOString().split("T")[0];
 
@@ -156,8 +156,22 @@ function validateDataInputPeriods(options) {
     if (messages.length > 0) {
         const contentTabs = Array.from(document.querySelectorAll("#tabs .ui-tabs-panel"));
 
+        const allMessages = [
+            ...messages,
+            allowRetrospectiveData ? "<b>Data set temporally open for data entry</b>" : null,
+        ].filter(Boolean);
+
+        const messagesHtml = `<div>${allMessages.map(msg => `<p>${msg}</p>`).join("")}</div>`;
+
         contentTabs.forEach(div => {
-            div.innerHTML = `<ul>${messages.map(msg => `<li>${msg}</li>`).join("")}</ul>`;
+            div.insertAdjacentHTML("afterbegin", messagesHtml);
+
+            if (!allowRetrospectiveData) {
+                div.querySelectorAll("input").forEach(input => {
+                    input.disabled = true;
+                    input.style.backgroundColor = "#EEE";
+                });
+            }
         });
     }
 }
@@ -177,6 +191,7 @@ function interpolate(template, namespace) {
 /* Initialize a custom form. Options:
 
     {
+        attributeCodeForDataInputPeriods: "CODE",
         translations: Dictionary<string, Dictionary<Locale, string>>
         dataElements: Dictionary<Id, Code>
         dataInput: {
@@ -188,11 +203,45 @@ function interpolate(template, namespace) {
     }
 */
 
+function parseJson(s, defaultValue) {
+    try {
+        return JSON.parse(s);
+    } catch (e) {
+        console.error("Error parsing JSON:", s, e);
+        return defaultValue;
+    }
+}
+
+async function getDataInputPeriodsFromDataSet(options, dataSetId) {
+    const defaultDataInput = options.dataInput;
+
+    try {
+        const fields = "attributeValues[attribute[code],value]";
+        const res = await fetch(`../api/dataSets/${dataSetId}.json?fields=${fields}`);
+        const jsonRes = await res.json();
+        const code = options.attributeCodeForDataInputPeriods;
+        const attributeValue = jsonRes.attributeValues.find(
+            attributeValue => attributeValue.attribute.code === code
+        );
+
+        return attributeValue ? parseJson(attributeValue.value, defaultDataInput) : {};
+    } catch (err) {
+        console.error("Error fetching data set:", err);
+        return defaultDataInput;
+    }
+}
+
 // eslint-disable-next-line no-unused-vars
 function init(options) {
-    $(document).on("dhis2.de.event.formLoaded", () => {
-        applyChangesToForm(options);
-        validateDataInputPeriods(options);
+    $(document).on("dhis2.de.event.formLoaded", async (ev, dataSetId) => {
+        const dataInputPeriodsFromDataSet = await getDataInputPeriodsFromDataSet(
+            options,
+            dataSetId
+        );
+        const fullOptions = { ...options, dataInput: dataInputPeriodsFromDataSet };
+
+        applyChangesToForm(fullOptions);
+        validateDataInputPeriods(fullOptions);
     });
 
     $(document).on("dhis2.de.event.dataValueSaved", runValidations.bind(null, options));

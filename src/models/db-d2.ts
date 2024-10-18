@@ -12,7 +12,6 @@ import {
     MetadataGetParams,
     ModelName,
     MetadataFields,
-    Attribute,
     DataEntryForm,
     DataValueResponse,
     Response,
@@ -116,7 +115,7 @@ export const metadataFields: MetadataFields = {
         id: true,
         code: true,
         valueType: true,
-        displayName: true,
+        name: true,
     },
     categories: {
         id: true,
@@ -458,16 +457,6 @@ export default class DbD2 {
                   status: false,
                   error: errors.join("\n"),
               };
-    }
-
-    public async getAttributeIdByCode(code: string): Promise<Attribute | undefined> {
-        const { attributes } = await this.api.get("/attributes", {
-            paging: true,
-            pageSize: 1,
-            filter: [`code:eq:${code}`],
-            fields: ["id"],
-        });
-        return attributes[0];
     }
 
     public getAnalytics(request: AnalyticsRequest): Promise<AnalyticsResponse> {
