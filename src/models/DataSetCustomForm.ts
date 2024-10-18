@@ -392,13 +392,13 @@ export class DataSetCustomForm {
 
     getGeneralDataElements(disaggregations: Disaggregations): DataElement[] {
         const hasAntigensDisaggregation = (dataElement: DataElement) =>
-            !_(dataElement.categories)
+            _(dataElement.categories)
                 .map(getCode)
                 .includes(this.config.dataElementGroupCodeForAntigens);
 
         return _(disaggregations)
-            .flatMap("dataElements")
-            .filter(hasAntigensDisaggregation)
+            .flatMap(disaggregation => disaggregation.dataElements)
+            .reject(hasAntigensDisaggregation)
             .uniqBy(getId)
             .value();
     }
@@ -564,6 +564,7 @@ export class DataSetCustomForm {
             translations: this.translations,
             dataElements: _.fromPairs(this.config.dataElements.map(de => [de.id, de.code])),
             dataInput: getDataInputFromCampaign(this.campaign),
+            attributeCodeForDataInputPeriods: this.config.attributeCodeForDataInputPeriods,
         };
         const toJSON = (obj: any) => JSON.stringify(obj, null, 2);
         // Remove the empty export (it's required by the linter, but does not work on a browser)
@@ -675,4 +676,5 @@ interface CustomFormOptions {
     translations: object;
     dataElements: Record<Id, Code>;
     dataInput: Maybe<DataInput>;
+    attributeCodeForDataInputPeriods: string;
 }

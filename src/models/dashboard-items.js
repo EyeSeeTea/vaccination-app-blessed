@@ -56,11 +56,11 @@ export const dashboardItemsConfig = {
         DATA_ELEMENT: ["RVC_AEB", "RVC_AEFI", "RVC_DOSES_ADMINISTERED", "RVC_DOSES_USED"],
     },
     chartsByAntigen: {
-        coverageBySite: {
+        coverageByCampaign: {
             ...definitions.coverageByDosesAndPeriod,
-            area: "site",
-            title: ns => i18n.t("Coverage by Site {{- period}} (do not edit this chart)", ns),
-            appendCode: "Coverage by site",
+            area: "campaign",
+            title: ns => i18n.t("Coverage by Campaign {{- period}} (do not edit this chart)", ns),
+            appendCode: "Coverage by campaign",
         },
         coverageByArea: {
             ...definitions.coverageByDosesAndPeriod,
@@ -68,11 +68,11 @@ export const dashboardItemsConfig = {
             title: ns => i18n.t("Coverage by Area {{- period}} (do not edit this chart)", ns),
             appendCode: "Coverage by area",
         },
-        coverageByCampaign: {
+        coverageBySite: {
             ...definitions.coverageByDosesAndPeriod,
-            area: "campaign",
-            title: ns => i18n.t("Coverage by Campaign {{- period}} (do not edit this chart)", ns),
-            appendCode: "Coverage by campaign",
+            area: "site",
+            title: ns => i18n.t("Coverage by Site {{- period}} (do not edit this chart)", ns),
+            appendCode: "Coverage by site",
         },
     },
     globalTables: {
