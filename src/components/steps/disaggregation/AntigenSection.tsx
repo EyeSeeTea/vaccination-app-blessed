@@ -122,14 +122,14 @@ class TypeSelect extends React.Component<TypeSelectProps> {
                             onChange={this.handleOptionChange}
                         >
                             <FormControlLabel
-                                value="reactive"
-                                control={<Radio />}
-                                label={i18n.t("Reactive")}
-                            />
-                            <FormControlLabel
                                 value="preventive"
                                 control={<Radio />}
                                 label={i18n.t("Preventive")}
+                            />
+                            <FormControlLabel
+                                value="reactive"
+                                control={<Radio />}
+                                label={i18n.t("Reactive")}
                             />
                         </RadioGroup>
                     </FormControl>

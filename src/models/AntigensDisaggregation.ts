@@ -1,4 +1,4 @@
-import { CategoryOption, DataElement, getCode, Maybe, Ref } from "./db.types";
+import { Category, CategoryOption, DataElement, getCode, Maybe, Ref } from "./db.types";
 import _ from "lodash";
 import { MetadataConfig, getRvcCode, baseConfig } from "./config";
 import { Antigen } from "./campaign";
@@ -56,7 +56,7 @@ export class AntigenDisaggregation extends Struct<AntigenDisaggregationData>() {
             .find(value => value.selected);
 
         const selectedCode = selected ? selected.option.code : undefined;
-        return selectedCode === baseConfig.categoryOptionCodePreventive ? "preventive" : "reactive";
+        return selectedCode === baseConfig.categoryOptionCodeReactive ? "reactive" : "preventive";
     }
 
     updateCampaignType(type: CampaignType): AntigenDisaggregation {
@@ -265,31 +265,12 @@ export class AntigensDisaggregation {
 
             const wasCategorySelected = !_(categoryOptionsEnabled).isEmpty();
 
-            const options = groups.map(optionGroup => {
-                const index = wasCategorySelected
-                    ? _(optionGroup).findIndex(
-                          options =>
-                              !_(options)
-                                  .intersectionBy(categoryOptionsEnabled, co => co.id)
-                                  .isEmpty()
-                      )
-                    : 0;
-                const indexSelected = index >= 0 ? index : 0;
-
-                return {
-                    indexSelected,
-                    values: optionGroup.map((options, optionGroupIndex) => {
-                        const isOptionGroupSelected =
-                            wasCategorySelected && indexSelected === optionGroupIndex;
-                        return options.map(option => ({
-                            option: option,
-                            selected: isOptionGroupSelected
-                                ? _(categoryOptionsEnabled).some(co => co.id === option.id)
-                                : true,
-                        }));
-                    }),
-                };
-            });
+            const options = getCategoryOptions(
+                antigenConfig,
+                category,
+                groups,
+                categoryOptionsEnabled
+            );
 
             const selected = wasCategorySelected ? true : !optional;
 
@@ -414,7 +395,7 @@ export class AntigensDisaggregation {
         });
 
         return !disaggregation.isTypeSelectable
-            ? disaggregation.updateCampaignType("reactive")
+            ? disaggregation.updateCampaignType("preventive")
             : disaggregation;
     }
 
@@ -451,6 +432,59 @@ export class AntigensDisaggregation {
 
         return { getByOptions: getCocIdByCategoryOptions };
     }
+}
+
+function getCategoryOptions(
+    antigenConfig: MetadataConfig["antigens"][0],
+    category: Category,
+    groups: CategoryOption[][][],
+    categoryOptionsEnabled: Ref[]
+) {
+    const categoryOverride = antigenConfig.categoriesOverride[category.code];
+    const wasCategorySelected = !_(categoryOptionsEnabled).isEmpty();
+
+    return groups.map(optionGroup => {
+        const index = wasCategorySelected
+            ? _(optionGroup).findIndex(
+                  options =>
+                      !_(options)
+                          .intersectionBy(categoryOptionsEnabled, co => co.id)
+                          .isEmpty()
+              )
+            : 0;
+
+        const indexSelected = index >= 0 ? index : 0;
+
+        const values = _(optionGroup)
+            .map((options, optionGroupIndex) => {
+                const isOptionGroupSelected =
+                    wasCategorySelected && indexSelected === optionGroupIndex;
+
+                const optionsFiltered = _(options)
+                    .map(option => {
+                        const optionIsNotInOverride =
+                            categoryOverride &&
+                            !_(categoryOverride.options).some(co => co.id === option.id);
+
+                        if (optionIsNotInOverride) return null;
+
+                        return {
+                            option: option,
+                            selected: isOptionGroupSelected
+                                ? _(categoryOptionsEnabled).some(co => co.id === option.id)
+                                : true,
+                        };
+                    })
+                    .compact()
+                    .value();
+
+                return optionsFiltered.length === 0 ? null : optionsFiltered;
+            })
+            .compact()
+            .value();
+
+        return { indexSelected: indexSelected, values: values };
+    });
 }
 
 export function getDataElements(
