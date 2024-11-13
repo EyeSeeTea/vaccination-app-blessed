@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2024-07-03T09:01:39.856Z\n"
-"PO-Revision-Date: 2024-07-03T09:01:39.856Z\n"
+"POT-Creation-Date: 2024-11-05T08:11:47.684Z\n"
+"PO-Revision-Date: 2024-11-05T08:11:47.684Z\n"
 
 msgid "Campaigns"
 msgstr ""
@@ -280,10 +280,10 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-msgid "Reactive"
+msgid "Preventive"
 msgstr ""
 
-msgid "Preventive"
+msgid "Reactive"
 msgstr ""
 
 msgid "Disaggregation"
@@ -408,13 +408,13 @@ msgid ""
 "associated data values"
 msgstr ""
 
-msgid "Coverage by Site {{- period}} (do not edit this chart)"
+msgid "Coverage by Campaign {{- period}} (do not edit this chart)"
 msgstr ""
 
 msgid "Coverage by Area {{- period}} (do not edit this chart)"
 msgstr ""
 
-msgid "Coverage by Campaign {{- period}} (do not edit this chart)"
+msgid "Coverage by Site {{- period}} (do not edit this chart)"
 msgstr ""
 
 msgid "Global QS Indicators {{- period}}"
