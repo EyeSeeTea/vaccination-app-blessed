@@ -10,6 +10,7 @@ const fp = require("lodash/fp");
 
 export type CampaignType = "preventive" | "reactive";
 
+const defaultCampaignType: CampaignType = "preventive";
 interface AntigenDisaggregationData {
     name: string;
     code: string;
@@ -46,17 +47,25 @@ export class AntigenDisaggregation extends Struct<AntigenDisaggregationData>() {
         reactive: baseConfig.categoryOptionCodeReactive,
     };
 
-    get type(): CampaignType {
-        const selected = _(this.dataElements)
+    get type(): Maybe<CampaignType> {
+        const selectedList = _(this.dataElements)
             .filter(de => de.code === "RVC_DOSES_ADMINISTERED")
             .flatMap(de => de.categories.filter(category => category.code === "RVC_TYPE"))
             .flatMap(category => category.options)
             .flatMap(options => options.values)
             .flatten()
-            .find(value => value.selected);
+            .filter(value => value.selected)
+            .value();
 
-        const selectedCode = selected ? selected.option.code : undefined;
-        return selectedCode === baseConfig.categoryOptionCodeReactive ? "reactive" : "preventive";
+        const selected = selectedList[0];
+
+        if (!selected || selectedList.length !== 1) {
+            return undefined;
+        } else {
+            return selected.option.code === baseConfig.categoryOptionCodeReactive
+                ? "reactive"
+                : "preventive";
+        }
     }
 
     updateCampaignType(type: CampaignType): AntigenDisaggregation {
@@ -334,7 +343,7 @@ export class AntigensDisaggregation {
 
                 return {
                     ageGroups: ageGroups,
-                    type: antigenDisaggregation.type,
+                    type: antigenDisaggregation.type || defaultCampaignType,
                     antigen: {
                         code: antigenDisaggregation.code,
                         name: antigenDisaggregation.name,
@@ -394,9 +403,11 @@ export class AntigensDisaggregation {
             isTypeSelectable: antigenConfig.isTypeSelectable,
         });
 
-        return !disaggregation.isTypeSelectable
-            ? disaggregation.updateCampaignType("preventive")
-            : disaggregation;
+        if (!disaggregation.isTypeSelectable || !disaggregation.type) {
+            return disaggregation.updateCampaignType(defaultCampaignType);
+        } else {
+            return disaggregation;
+        }
     }
 
     public async getCocMetadata(db: DbD2): Promise<CocMetadata> {
